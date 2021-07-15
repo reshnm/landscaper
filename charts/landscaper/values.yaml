@@ -12,31 +12,27 @@ landscaper:
     deployCrd: true
 #   forceUpdate: true
   registryConfig: # contains optional oci secrets
-    cache: {}
-#      useInMemoryOverlay: false
+    cache: {} 
+    useInMemoryOverly: false # Landscaper caches pulled OCI artefacts on disk and optionally in-memory
     allowPlainHttpRegistries: false
     insecureSkipVerify: false
-    secrets: {}
-#     <name>: <docker config json>
+    secrets:
+      default:  {
+                  "auths": {
+                    "http://registry-harbor-registry.harbor:5000/": {
+                      "auth": "aGFyYm9yX3JlZ2lzdHJ5X3VzZXI6aGFyYm9yX3JlZ2lzdHJ5X3Bhc3N3b3JkCg=="
+                    }
+                  }
+                }
+  metrics:
+    port: 8080  
 
-#  The default repositoryContext that will be used if no repositoryContext is defined in an installation
-#  repositoryContext:
-#    type: "ociRegistry"
-#    baseUrl: ""
+  deployers: 
+  - container
+  - helm
+  - mock
+  - manifest 
 
-#  metrics:
-#    port: 8080
-
-#  deployerManagement:
-#    disable: false
-#    agent:
-#      disable: false
-
-  deployers: []
-#  - container
-#  - helm
-#  - mock
-#  - manifest
   deployersConfig: {}
 #    container:
 #      container-helm chart values

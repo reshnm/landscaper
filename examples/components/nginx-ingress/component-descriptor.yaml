@@ -11,7 +11,7 @@ component:
 
   repositoryContexts:
     - type: 'ociRegistry'
-      baseUrl: 'localhost:5000/comp'
+      baseUrl: 'harbor-harbor-registry.harbor:5000/comp'
   sources: []
 
   provider: 'internal'

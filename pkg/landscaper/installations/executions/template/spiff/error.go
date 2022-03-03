@@ -15,13 +15,14 @@ type TemplateError struct {
 	err            error
 	inputFormatter *template.TemplateInputFormatter
 
-	message string
+	message *string
 }
 
 // TemplateErrorBuilder creates a new TemplateError.
 func TemplateErrorBuilder(err error) *TemplateError {
 	return &TemplateError{
 		err: err,
+		message: nil,
 	}
 }
 
@@ -32,20 +33,24 @@ func (e *TemplateError) WithInputFormatter(inputFormatter *template.TemplateInpu
 }
 
 // Build builds the error message.
-func (e *TemplateError) Build() *TemplateError {
+func (e *TemplateError) FormatError(prettyPrint bool, sensitiveKeys ...string) {
 	builder := strings.Builder{}
 	builder.WriteString(e.err.Error())
 
 	if e.inputFormatter != nil {
 		builder.WriteString("\ntemplate input:\n")
-		builder.WriteString(e.inputFormatter.Format("\t"))
+		builder.WriteString(e.inputFormatter.Format("\t", prettyPrint, sensitiveKeys...))
 	}
 
-	e.message = builder.String()
-	return e
+	message := builder.String()
+	e.message = &message
 }
 
 // Error returns the error message.
 func (e *TemplateError) Error() string {
-	return e.message
+	if  e.message == nil {
+		e.FormatError(false, "imports", "values", "state")
+	}
+
+	return *e.message
 }

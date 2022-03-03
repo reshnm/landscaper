@@ -61,6 +61,11 @@ type ExecutionTemplater interface {
 		exports interface{}) (*ExportExecutorOutput, error)
 }
 
+type TemplaterError interface {
+	error
+	FormatError(prettyPrint bool, sensitiveKeys ...string)
+}
+
 // SubinstallationExecutorOutput describes the output of deploy executor.
 type SubinstallationExecutorOutput struct {
 	Subinstallations []*lsv1alpha1.InstallationTemplate `json:"subinstallations"`

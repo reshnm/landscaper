@@ -32,25 +32,21 @@ func init() {
 // The TemplateInputFormatter formats the input parameter of a template in a human-readable format.
 type TemplateInputFormatter struct {
 	inputData     map[string]interface{}
-	prettyPrint   bool
-	sensitiveKeys sets.String
 }
 
 // NewTemplateInputFormatter creates a new template input formatter.
-// When prettyPrint is set to true, the json output will be formatted with easier readable indentation.
-// The parameter sensitiveKeys can contain template input keys which may contain sensitive data.
-// When such a key is encountered during formatting, the values of the respective key will be removed.
-func NewTemplateInputFormatter(inputData map[string]interface{}, prettyPrint bool, sensitiveKeys ...string) *TemplateInputFormatter {
+func NewTemplateInputFormatter(inputData map[string]interface{}) *TemplateInputFormatter {
 	return &TemplateInputFormatter{
 		inputData:     inputData,
-		prettyPrint:   prettyPrint,
-		sensitiveKeys: sets.NewString(sensitiveKeys...),
 	}
 }
 
 // Format formats the template input into a string value.
 // The given prefix is prepended to each line of the formatted output.
-func (f *TemplateInputFormatter) Format(prefix string) string {
+// When prettyPrint is set to true, the json output will be formatted with easier readable indentation.
+// The parameter sensitiveKeys can contain template input keys which may contain sensitive data.
+// When such a key is encountered during formatting, the values of the respective key will be removed.
+func (f *TemplateInputFormatter) Format(prefix string, prettyPrint bool, sensitiveKeys ...string) string {
 	if f.inputData == nil {
 		return ""
 	}
@@ -59,11 +55,12 @@ func (f *TemplateInputFormatter) Format(prefix string) string {
 		err       error
 		marshaled []byte
 		formatted strings.Builder
+		sensitiveKeysSet = sets.NewString(sensitiveKeys...)
 	)
 
 	for k, v := range f.inputData {
 		// If the current key is contained in the list of sensitive keys, all values in each sub-tree will be removed.
-		if f.sensitiveKeys.Has(k) {
+		if sensitiveKeysSet.Has(k) {
 			source, ok := v.(map[string]interface{})
 			if ok {
 				// The map is deep copied so that the original input value is not getting modified.
@@ -75,7 +72,7 @@ func (f *TemplateInputFormatter) Format(prefix string) string {
 			v = removeValue(v, 1)
 		}
 
-		if f.prettyPrint {
+		if prettyPrint {
 			marshaled, err = json.MarshalIndent(v, prefix, "  ")
 		} else {
 			marshaled, err = json.Marshal(v)
@@ -86,7 +83,7 @@ func (f *TemplateInputFormatter) Format(prefix string) string {
 		}
 
 		// compress values if pretty print is not enabled and the length exceeds the threshold.
-		if !f.prettyPrint && len(marshaled) > compressThresholdBytes {
+		if !prettyPrint && len(marshaled) > compressThresholdBytes {
 			encoded := compressAndEncode(string(marshaled))
 			formatted.WriteString(fmt.Sprintf("%s%s: >gzip>base64> %s\n", prefix, k, encoded))
 		} else {

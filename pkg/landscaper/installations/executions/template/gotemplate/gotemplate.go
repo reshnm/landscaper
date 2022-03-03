@@ -68,7 +68,7 @@ func (t *Templater) TemplateSubinstallationExecutions(tmplExec lsv1alpha1.Templa
 		Option("missingkey=error").
 		Parse(rawTemplate)
 	if err != nil {
-		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate).Build()
+		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate)
 		return nil, parseError
 	}
 
@@ -76,8 +76,7 @@ func (t *Templater) TemplateSubinstallationExecutions(tmplExec lsv1alpha1.Templa
 	data := bytes.NewBuffer([]byte{})
 	if err := tmpl.Execute(data, values); err != nil {
 		executeError := TemplateErrorBuilder(err).WithSource(&rawTemplate).
-			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values, false, "state")).
-			Build()
+			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values))
 		return nil, executeError
 	}
 	if err := t.storeDeployExecutionState(ctx, tmplExec, data.Bytes()); err != nil {
@@ -110,7 +109,7 @@ func (t *Templater) TemplateDeployExecutions(tmplExec lsv1alpha1.TemplateExecuto
 		Option("missingkey=error").
 		Parse(rawTemplate)
 	if err != nil {
-		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate).Build()
+		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate)
 		return nil, parseError
 	}
 
@@ -118,8 +117,7 @@ func (t *Templater) TemplateDeployExecutions(tmplExec lsv1alpha1.TemplateExecuto
 	data := bytes.NewBuffer([]byte{})
 	if err := tmpl.Execute(data, values); err != nil {
 		executeError := TemplateErrorBuilder(err).WithSource(&rawTemplate).
-			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values, false, "imports")).
-			Build()
+			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values))
 		return nil, executeError
 	}
 	if err := t.storeDeployExecutionState(ctx, tmplExec, data.Bytes()); err != nil {
@@ -150,7 +148,7 @@ func (t *Templater) TemplateExportExecutions(tmplExec lsv1alpha1.TemplateExecuto
 		Option("missingkey=error").
 		Parse(rawTemplate)
 	if err != nil {
-		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate).Build()
+		parseError := TemplateErrorBuilder(err).WithSource(&rawTemplate)
 		return nil, parseError
 	}
 
@@ -161,8 +159,7 @@ func (t *Templater) TemplateExportExecutions(tmplExec lsv1alpha1.TemplateExecuto
 	data := bytes.NewBuffer([]byte{})
 	if err := tmpl.Execute(data, values); err != nil {
 		executeError := TemplateErrorBuilder(err).WithSource(&rawTemplate).
-			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values, false, "imports", "values")).
-			Build()
+			WithInputFormatter(lstmpl.NewTemplateInputFormatter(values))
 		return nil, executeError
 	}
 	if err := t.storeExportExecutionState(ctx, tmplExec, data.Bytes()); err != nil {

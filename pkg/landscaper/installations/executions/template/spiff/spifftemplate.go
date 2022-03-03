@@ -64,8 +64,7 @@ func (t *Templater) TemplateSubinstallationExecutions(tmplExec lsv1alpha1.Templa
 	res, err := spiff.Cascade(rawTemplate, nil, stateNode)
 	if err != nil {
 		cascadeError := TemplateErrorBuilder(err).
-			WithInputFormatter(template.NewTemplateInputFormatter(values, false)).
-			Build()
+			WithInputFormatter(template.NewTemplateInputFormatter(values))
 		return nil, cascadeError
 	}
 	if err := t.storeDeployExecutionState(ctx, tmplExec, spiff, res); err != nil {
@@ -106,8 +105,7 @@ func (t *Templater) TemplateDeployExecutions(tmplExec lsv1alpha1.TemplateExecuto
 	res, err := spiff.Cascade(rawTemplate, nil, stateNode)
 	if err != nil {
 		cascadeError := TemplateErrorBuilder(err).
-			WithInputFormatter(template.NewTemplateInputFormatter(values, false, "imports")).
-			Build()
+			WithInputFormatter(template.NewTemplateInputFormatter(values))
 		return nil, cascadeError
 	}
 	if err := t.storeDeployExecutionState(ctx, tmplExec, spiff, res); err != nil {
@@ -148,8 +146,7 @@ func (t *Templater) TemplateExportExecutions(tmplExec lsv1alpha1.TemplateExecuto
 	res, err := spiff.Cascade(rawTemplate, nil, stateNode)
 	if err != nil {
 		cascadeError := TemplateErrorBuilder(err).
-			WithInputFormatter(template.NewTemplateInputFormatter(values, false, "imports", "values")).
-			Build()
+			WithInputFormatter(template.NewTemplateInputFormatter(values))
 		return nil, cascadeError
 	}
 

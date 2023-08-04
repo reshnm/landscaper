@@ -581,6 +581,9 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
+# github.com/qri-io/starlib v0.5.0
+## explicit; go 1.12
+github.com/qri-io/starlib/util
 # github.com/rivo/uniseg v0.2.0
 ## explicit; go 1.12
 github.com/rivo/uniseg
@@ -646,10 +649,11 @@ go.opentelemetry.io/otel/metric/embedded
 # go.opentelemetry.io/otel/trace v1.16.0
 ## explicit; go 1.19
 go.opentelemetry.io/otel/trace
-# go.starlark.net v0.0.0-20221028183056-acb66ad56dd2
-## explicit; go 1.13
+# go.starlark.net v0.0.0-20230726094710-7dadff395006
+## explicit; go 1.16
 go.starlark.net/internal/compile
 go.starlark.net/internal/spell
+go.starlark.net/lib/time
 go.starlark.net/resolve
 go.starlark.net/starlark
 go.starlark.net/starlarkstruct

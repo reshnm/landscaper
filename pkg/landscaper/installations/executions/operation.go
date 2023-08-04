@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	starlarktemplate "github.com/gardener/landscaper/pkg/landscaper/installations/executions/template/starlark"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -61,7 +63,10 @@ func (o *ExecutionOperation) RenderDeployItemTemplates(ctx context.Context, inst
 		Inst:       inst.GetInstallation(),
 	}
 	targetResolver := secretresolver.New(o.Client())
-	tmpl := template.New(gotemplate.New(templateStateHandler, targetResolver), spiff.New(templateStateHandler))
+	tmpl := template.New(
+		gotemplate.New(templateStateHandler, targetResolver),
+		spiff.New(templateStateHandler),
+		starlarktemplate.New())
 	executions, err := tmpl.TemplateDeployExecutions(
 		template.NewDeployExecutionOptions(
 			template.NewBlueprintExecutionOptions(

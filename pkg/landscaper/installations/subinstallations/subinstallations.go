@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"reflect"
 
+	starlarktemplate "github.com/gardener/landscaper/pkg/landscaper/installations/executions/template/starlark"
+
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -195,7 +197,10 @@ func (o *Operation) getInstallationTemplates() ([]*lsv1alpha1.InstallationTempla
 			Inst:       o.Inst.GetInstallation(),
 		}
 		targetResolver := secretresolver.New(o.Client())
-		tmpl := template.New(gotemplate.New(templateStateHandler, targetResolver), spiff.New(templateStateHandler))
+		tmpl := template.New(
+			gotemplate.New(templateStateHandler, targetResolver),
+			spiff.New(templateStateHandler),
+			starlarktemplate.New())
 		templatedTmpls, err := tmpl.TemplateSubinstallationExecutions(template.NewDeployExecutionOptions(
 			template.NewBlueprintExecutionOptions(
 				o.Context().External.InjectComponentDescriptorRef(o.Inst.GetInstallation().DeepCopy()),

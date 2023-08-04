@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"strings"
 
+	starlarktemplate "github.com/gardener/landscaper/pkg/landscaper/installations/executions/template/starlark"
+
 	"github.com/mandelsoft/spiff/spiffing"
 	spiffyaml "github.com/mandelsoft/spiff/yaml"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -294,7 +296,8 @@ func (c *Constructor) RenderImportExecutions() error {
 	targetResolver := secretresolver.New(c.Operation.Client())
 	tmpl := template.New(
 		gotemplate.New(templateStateHandler, targetResolver),
-		spiff.New(templateStateHandler))
+		spiff.New(templateStateHandler),
+		starlarktemplate.New())
 	errors, bindings, err := tmpl.TemplateImportExecutions(
 		template.NewBlueprintExecutionOptions(
 			c.Operation.Context().External.InjectComponentDescriptorRef(c.Operation.Inst.GetInstallation()),

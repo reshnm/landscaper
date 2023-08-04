@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	starlarktemplate "github.com/gardener/landscaper/pkg/landscaper/installations/executions/template/starlark"
+
 	"github.com/mandelsoft/spiff/spiffing"
 	spiffyaml "github.com/mandelsoft/spiff/yaml"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -83,7 +85,8 @@ func (c *Constructor) Construct(ctx context.Context) ([]*dataobjects.DataObject,
 
 	tmpl := template.New(
 		gotemplate.New(stateHdlr, targetResolver),
-		spiff.New(stateHdlr))
+		spiff.New(stateHdlr),
+		starlarktemplate.New())
 	exports, err := tmpl.TemplateExportExecutions(
 		template.NewExportExecutionOptions(
 			template.NewBlueprintExecutionOptions(

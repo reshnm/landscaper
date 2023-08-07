@@ -1,18 +1,23 @@
 package starlarktemplate
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/qri-io/starlib/util"
 	"go.starlark.net/starlark"
 	"sigs.k8s.io/yaml"
+	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/pkg/components/model"
 	"github.com/gardener/landscaper/pkg/landscaper/blueprints"
 	"github.com/gardener/landscaper/pkg/landscaper/installations/executions/template"
+)
+
+const (
+	maximumExecutionTime = 10 * time.Second
 )
 
 type Templater struct {
@@ -22,7 +27,9 @@ func New() *Templater {
 	return &Templater{}
 }
 func (t *Templater) execute(name string, src string, outputName string, values map[string]interface{}) (interface{}, error) {
-	thread := &starlark.Thread{Name: "StarlarkTemplater"}
+	thread := &starlark.Thread{
+		Name: "StarlarkTemplater",
+	}
 	predeclared := starlark.StringDict{}
 
 	for k, v := range values {
@@ -36,6 +43,16 @@ func (t *Templater) execute(name string, src string, outputName string, values m
 	for k, b := range builtins {
 		predeclared[k] = b
 	}
+
+	ctx, cancelTimeout := context.WithCancel(context.Background())
+	defer cancelTimeout()
+	go func() {
+		select {
+		case <-ctx.Done():
+		case <-time.After(maximumExecutionTime):
+			thread.Cancel("maximum execution time exceeded")
+		}
+	}()
 
 	globals, err := starlark.ExecFile(thread, name, src, predeclared)
 	if err != nil {
@@ -56,7 +73,7 @@ func (t *Templater) execute(name string, src string, outputName string, values m
 }
 
 func (t *Templater) Type() lsv1alpha1.TemplateType {
-	return lsv1alpha1.StarLarkTemplateType
+	return lsv1alpha1.StarlarkTemplateType
 }
 
 func (t *Templater) TemplateImportExecutions(tmplExec lsv1alpha1.TemplateExecutor,

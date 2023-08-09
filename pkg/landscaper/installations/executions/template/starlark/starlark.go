@@ -45,7 +45,6 @@ func (t *Templater) execute(name string, src string, outputName string, values m
 	}
 
 	ctx, cancelTimeout := context.WithCancel(context.Background())
-	defer cancelTimeout()
 	go func() {
 		select {
 		case <-ctx.Done():
@@ -55,6 +54,7 @@ func (t *Templater) execute(name string, src string, outputName string, values m
 	}()
 
 	globals, err := starlark.ExecFile(thread, name, src, predeclared)
+	cancelTimeout()
 	if err != nil {
 		return nil, err
 	}

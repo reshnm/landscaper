@@ -142,7 +142,7 @@ func base64decode(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 
-	decoded, err := util.Marshal(d)
+	decoded, err := util.Marshal(string(d))
 	if err != nil {
 		return nil, err
 	}

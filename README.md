@@ -1,5 +1,6 @@
 <img src="./logo/landscaper.svg" width="221">
 
+# This repository has been moved to https://github.com/openmcp-project/landscaper
 
 # Landscaper
 
